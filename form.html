@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/themes/start/jquery-ui.css" type="text/css"
+        rel="Stylesheet" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+        integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+        <style type="text/css">
+            body, html, #form-div
+            {
+                margin: 0; padding: 0; height: 100%; overflow: hidden;
+            }
+
+            #content
+            {
+                position:absolute; left: 0; right: 0; bottom: 0; top: 0px; 
+            }
+        </style>
+        <script>
+            function generateLink(email, location) {
+                return `https://docs.google.com/forms/d/e/1FAIpQLSdFPGNogDiN7_dHUPa5dXFEcD59yhonmGObWPP-Am3shiSidA/viewform?usp=pp_url&entry.1316415813=${encodeURI(email)}&entry.1356628791=${encodeURI(location)}&entry.1016395144=n/a&entry.1774636707=n/a&entry.1347567861=n/a&entry.753564458=n/a&entry.1542557005=n/a&entry.58000104=n/a&entry.1968815450=n/a&entry.632556710=n/a&entry.1850429052=n/a`;
+            }
+
+            function getUrlParameter(sParam) {
+                var sPageURL = window.location.search.substring(1),
+                    sURLVariables = sPageURL.split('&'),
+                    sParameterName,
+                    i;
+
+                for (i = 0; i < sURLVariables.length; i++) {
+                    sParameterName = sURLVariables[i].split('=');
+
+                    if (sParameterName[0] === sParam) {
+                        return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+                    }
+                }
+            };
+
+            $(document).ready(function () {
+                const email = getUrlParameter("email");
+                const location = getUrlParameter("location");
+                const link = generateLink(email, location);
+                $('#form-div').html(
+                    `<iframe src="${link}&embedded=true" width="100%" height="100%" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>`
+                );
+            });
+        </script>
+    <title>Report My Supplies</title>
+</head>
+
+<body>
+    <div id="form-div"></div>
+</body>
+
+</html>
