@@ -14,6 +14,8 @@
 
 
     <script>
+
+        // an array of all BJC location strings
         const locations = ['2100 (Cardiology)',
             '3500 (Observation)',
             '4400 (Surgical ICU Burn/Trauma)',
@@ -102,14 +104,18 @@
             'South County Operating Room',
             "WAC (Women's Assessment Center)"]
 
+        // Adds a location to the 'select' html element which let users scroll through locations
         function addLocOption(location) {
             $('#location').append(`<option value="${location}">${location}</option>`)
         }
 
+        // Return a custom link to reportmysupplies.app with parameters email and location
+        // (this will lead those fields to be pre-filled in the embedded form at reportmysupplies.app)
         function generateLink(email, location) {
             return `https://www.reportmysupplies.app?email=${encodeURI(email)}&location=${encodeURI(location)}`;
         }
 
+        // Returns html to create two buttons, one to copy a link and one to open the link
         function generateLinksHTML() {
             let html = `
         <div class="btn-toolbar btn-toolbar-lg text-center" role="toolbar" />
@@ -124,6 +130,7 @@
             return html;
         }
 
+        // Copies the str to the clipboard of the user (shameless stackoverflow steal)
         const copyToClipboard = (str) => {
             const el = document.createElement('textarea');
             el.value = str;
@@ -133,6 +140,8 @@
             document.body.removeChild(el);
         };
 
+        // Updates the response area to represent a proper response to 
+        // the current inputted email and location (or lack thereof)
         function updateResponseArea() {
             let locVal = $('#location').children("option:selected").val();
             if (locVal == "[select a location]") {
@@ -144,6 +153,8 @@
             }
             let locEmpty = (locVal == "");
             let emailEmpty = (emailVal == "");
+            
+            // This string will be set as the html contents of the #response-area div
             let html = "";
 
             if (locEmpty && emailEmpty) {
@@ -156,10 +167,13 @@
                 } else {
                     html = `<p>Here's your form link with pre-filled email address <strong>${emailVal}</strong> and pre-filled location <strong>${locVal}</strong>:</p>`;
                 }
+
+                // We generate links in every scenario, unless the user has inputted absolutely nothing
                 html = html + generateLinksHTML();
             }
             $('#response-area').html(html);
 
+            // Link the buttons, now that the html exists
             const prefilledLink = generateLink(emailVal, locVal);
             $('#copy-button').on('click', function () {
                 copyToClipboard(prefilledLink);
@@ -171,7 +185,12 @@
         }
 
         $(document).ready(function () {
+            
+            // we add all locations to the select html element representing locations
             locations.forEach(addLocOption);
+            
+            // initialize the response area, then make sure any change to the user inputs is 
+            // reflected in the response area by 
             updateResponseArea()
             $('#location').on('change', function () {
                 updateResponseArea()
