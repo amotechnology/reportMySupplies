@@ -1,4 +1,5 @@
 # reportMySupplies
+By Daniel Sosebee and Olly Cohen 
 
 [Response form for front line healthcare workers to note supply chain shortages of PPE and other equipment](htps://www.reportmysupplies.app)
 
