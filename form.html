@@ -10,76 +10,19 @@
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
         integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-        <style type="text/css">
-            
-            /*This CSS is necessary for the embedded form to take up all available space*/
-            body, html, #form-div
-            {
-                margin: 0; padding: 0; height: 100%; overflow: hidden;
-            }
-
-            #content
-            {
-                position:absolute; left: 0; right: 0; bottom: 0; top: 0px; 
-            }
-        </style>
-        <script>
-
-            // Returns a link to the google form with the specified email and location pre-filled
-            function generateLink(email, location) {
-                return `https://docs.google.com/forms/d/e/1FAIpQLSdFPGNogDiN7_dHUPa5dXFEcD59yhonmGObWPP-Am3shiSidA/viewform?usp=pp_url&entry.1316415813=${encodeURI(email)}&entry.1356628791=${encodeURI(location)}&entry.1016395144=n/a&entry.1774636707=n/a&entry.1347567861=n/a&entry.753564458=n/a&entry.1542557005=n/a&entry.58000104=n/a&entry.1968815450=n/a&entry.632556710=n/a&entry.1850429052=n/a`;
-            }
-
-            /*
-            Param sParam: a string, the name of the desired parameter
-
-            Return the URL paramter value associated with the input string name
-            */
-            function getUrlParameter(sParam) {
-                var sPageURL = window.location.search.substring(1),
-                    sURLVariables = sPageURL.split('&'),
-                    sParameterName,
-                    i;
-
-                for (i = 0; i < sURLVariables.length; i++) {
-                    sParameterName = sURLVariables[i].split('=');
-
-                    if (sParameterName[0] === sParam) {
-                        return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
-                    }
-                }
-            };
-
-            $(document).ready(function () {
-                
-                // email and location can come in as URL params, so get those as JS variables
-                const email = getUrlParameter("email");
-                const location = getUrlParameter("location");
-                const link = generateLink(email, location);
-                
-                // embed the Google form, which will take up all remaining space.
-                $('#form-div').html(
-                    `<iframe src="${link}&embedded=true" width="100%" height="100%" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>`
-                );
-
-                // link the form prefiller, which should be at ./prefill.html
-                $('#nav-div').html(
-                    `<nav class="navbar" id="top-nav">
-                        <a href="prefill.html">
-                            <h3 id="prefill-link">
-                                Create your faster custom form
-                            </h3>
-                        </a>
-                    </nav>`
-                )
-            });
-        </script>
-    <title>Report My Supplies</title>
+        <script src="js/locations.js"></script>
+        <script src="js/elements.js"></script>
+        <script src="js/form.js"></script>
+        <!-- <link rel="stylesheet" href="css/form.css"> -->
+    <title>Report My Supplies -- BJC Supply Chain Tracker</title>
 </head>
 
 <body>
-    <div id="nav-div"></div>
-    <div id="form-div"></div>
+    <div class="container" id="outer-container">
+        <div class="form-group" id="form">
+            <div id="select-div"></div>
+        </div>
+    </div>
 </body>
 
 </html>
