@@ -10,7 +10,8 @@ function addLocOption(location) {
 // the select has id="location"
 function addLocationSelect(divId){
     $(`#${divId}`).html(
-        `<select id="${selectId}" name="${selectId}" class="form-control">
+        `<br><p class="required">Please select your location.</p>
+        <select id="${selectId}" name="${selectId}" class="form-control" aria-required="true">
             <option value="[select a location]">[select a location]</option>
         </select>`
     )

@@ -8,6 +8,7 @@
         rel="Stylesheet" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="css/form.css" type="text/css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
         integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
         <script src="js/locations.js"></script>
@@ -19,8 +20,29 @@
 
 <body>
     <div class="container" id="outer-container">
+        <div class="jumbotron">
+            <p class="lead">Report My Supplies: BJC Supply Chain Tracking</p>
+        </div>
         <div class="form-group" id="form">
+            <div id="personal-info">
+                <label for="name-input">Name (Optional)</label>
+                <input type="text" class="form-control" id="exampleInputEmail1" placeholder="Name" aria-required="false">
+                <br>
+                <label class="required" for="email-input">Email address</label>
+                <input type="email" class="form-control" id="email-input" placeholder="Email" aria-required="true">
+            </div>
             <div id="select-div"></div>
+            <div id="survey"><br><h6>Do you have enough of the following?</h6></div>
+            <div id="short-answer">
+                <br>
+                <div class="form-group">
+                    <label for="additional-text">Please indicate any additional equipment or resources that you need</label>
+                    <textarea class="form-control" id="additional-text" rows="2"></textarea>
+                </div>
+            </div>
+            <div id="submit">
+                <button type="button" class="btn btn-primary btn-lg btn-block">Submit</button>
+            </div>
         </div>
     </div>
 </body>
