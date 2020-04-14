@@ -1,7 +1,6 @@
 import pymysql
 import sys
 import logging
-from datetime import datetime
 
 # info to access database....could move this to its own file 
 host = 'reportmysupplies.czvyghkkrqot.us-east-2.rds.amazonaws.com'
@@ -57,12 +56,7 @@ def postSupplies(event, context):
     conn.commit()
     cur.close()
     response = {
-        'headers': {
-            'Content-Type': 'application/json'
-        }, 
-        'body': {
-            'status': result
-        }
+        'statusCode': 200, 
     }
 
     return response

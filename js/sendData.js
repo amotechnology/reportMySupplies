@@ -119,24 +119,29 @@ $(document).ready(function () {
         additionalInfo = additionalInfoInput.val();
 
         let data = {
-            "name": name,
-            "email": email,
-            "location": location,
-            "faceShields": faceShields,
-            "isolationMasks": isolationMasks,
-            "n95s": n95s,
-            "paprs": paprs,
-            "wipes": wipes,
-            "gowns": gowns,
-            "additionalResources": additionalInfo
+            'name': name,
+            'email': email,
+            'location': location,
+            'faceShields': faceShields,
+            'isolationMasks': isolationMasks,
+            'n95s': n95s,
+            'paprs': paprs,
+            'wipes': wipes,
+            'gowns': gowns,
+            'additionalResources': additionalInfo
         }
 
-        let lambdaApiUrl = 'https://5alsy89r1j.execute-api.us-east-2.amazonaws.com/prod/reportmysupplies';
-        fetch(lambdaApiUrl, {
-            mode: 'no-cors',
-            method: 'POST',
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify(data)
+        let lambdaApiUrl = 'https://5alsy89r1j.execute-api.us-east-2.amazonaws.com/prod/form';
+        $.ajax({
+            type: 'POST',
+            url: lambdaApiUrl,
+            crossDomain: true,
+            data: JSON.stringify(data),
+            dataType: 'json',
+            contentType: 'plain/text',
+            success: function(data) {
+                console.log(data);
+            }
         });
     });
 
