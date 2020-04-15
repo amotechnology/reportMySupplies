@@ -2,7 +2,7 @@ import pymysql
 import sys
 import logging
 
-# info to access database....could move this to its own file 
+# info to access database
 host = 'reportmysupplies.czvyghkkrqot.us-east-2.rds.amazonaws.com'
 name = 'admin'
 password = 'FezTropic365'
@@ -19,8 +19,6 @@ except pymysql.MySQLError as e:
     logger.error(e)
     sys.exit()
 
-logger.info('SUCCESS: Connection to RDS MySQL instance succeeded')
-
 # lambda function to send form response to database
 def postSupplies(event, context):
     
@@ -28,6 +26,7 @@ def postSupplies(event, context):
     name = event['name']
     email = event['email']
     location = event['location']
+    division = event['division']
     faceShields = event['faceShields']
     isolationMasks = event['isolationMasks']
     n95s = event['n95s']
@@ -38,26 +37,36 @@ def postSupplies(event, context):
 
     formResponseTemplate = ('''
         INSERT INTO FormResponses (
-            name, employee_email, location,
+            name, employee_email, location, division,
             face_shields, isolation_masks, n95s, paprs,
             wipes, gowns, additional_resources)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     ''')
     
     formResponseAnswers = (
-        name, email, location, faceShields,
-        isolationMasks, n95s, paprs, wipes,
-        gowns, additionalResources
+        name, email, location, division, 
+        faceShields, isolationMasks, n95s, 
+        paprs, wipes, gowns, additionalResources
     )
     
-    cur = conn.cursor()
-    cur.execute(formResponseTemplate, formResponseAnswers)
-    result = str(cur.fetchone())
-    conn.commit()
-    cur.close()
-    response = {
-        'statusCode': 200, 
-    }
+    try:
+        with conn.cursor() as cursor:
+            cursor.execute(formResponseTemplate, formResponseAnswers)
+            conn.commit()
+            cursor.close()
+    except pymysql.MySQLError as e:
+        return {
+            'statusCode': 200,
+            'body': {
+                'status': 'failure',
+                'message': str(e)
+            }
+        }
 
-    return response
+    return {
+        'statusCode': 200,
+        'body': {
+            'status': 'success'
+        } 
+    }
 

@@ -2,6 +2,7 @@ $(document).ready(function () {
     const nameInput = $('#exampleInputEmail1');
     const emailInput = $('#email-input');
     const locationSelect = $('#location');
+    const divisionSelect = $('#division');
     const faceShieldRadio = $("input[name='face-shield-customRadio']");
     const isolationMaskRadio = $("input[name='isolation-mask-customRadio']");
     const n95Radio = $("input[name='n95-customRadio']");
@@ -13,7 +14,8 @@ $(document).ready(function () {
 
     let name = '';
     let email = '';
-    let location = '';
+    let location = '[select a location]';
+    let division = '[select a division]';
     let faceShields = 'n/a';
     let isolationMasks = 'n/a';
     let n95s = 'n/a';
@@ -112,37 +114,87 @@ $(document).ready(function () {
         }
     });
 
+    // Function taken from: https://www.w3resource.com/javascript/form/email-validation.php
+    function validateEmail(email) {
+        if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    
+    function validateInputs() {
+        let validInput = true;
+        if (!validateEmail(email)) {
+            validInput = false;
+            $('#invalid-email').css('display', 'block');
+        }
+        if (location == '[select a location]') {
+            validInput = false;
+            $('#invalid-location').css('display', 'block');
+        }
+        if (division == '[select a division]') {
+            validInput = false;
+            $('#invalid-division').css('display', 'block');
+        }
+        return validInput;
+    }
+
     submitButton.click(function() {
+        window.scrollTo(0, 0);
+        $('#invalid-email').css('display', 'none');
+        $('#invalid-location').css('display', 'none');
+        $('#invalid-division').css('display', 'none');
+
         name = nameInput.val();
         email = emailInput.val();
         location = locationSelect.val();
+        division = divisionSelect.val();
         additionalInfo = additionalInfoInput.val();
 
-        let data = {
-            'name': name,
-            'email': email,
-            'location': location,
-            'faceShields': faceShields,
-            'isolationMasks': isolationMasks,
-            'n95s': n95s,
-            'paprs': paprs,
-            'wipes': wipes,
-            'gowns': gowns,
-            'additionalResources': additionalInfo
-        }
-
-        let lambdaApiUrl = 'https://5alsy89r1j.execute-api.us-east-2.amazonaws.com/prod/form';
-        $.ajax({
-            type: 'POST',
-            url: lambdaApiUrl,
-            crossDomain: true,
-            data: JSON.stringify(data),
-            dataType: 'json',
-            contentType: 'plain/text',
-            success: function(data) {
-                console.log(data);
+        if (validateInputs()) {
+            let data = {
+                'name': name,
+                'email': email,
+                'location': location,
+                'division': division,
+                'faceShields': faceShields,
+                'isolationMasks': isolationMasks,
+                'n95s': n95s,
+                'paprs': paprs,
+                'wipes': wipes,
+                'gowns': gowns,
+                'additionalResources': additionalInfo
             }
-        });
+
+            let lambdaApiUrl = 'https://5alsy89r1j.execute-api.us-east-2.amazonaws.com/prod/form';
+
+            $.ajax({
+                type: 'POST',
+                url: lambdaApiUrl,
+                crossDomain: true,
+                data: JSON.stringify(data),
+                dataType: 'json',
+                contentType: 'application/json',
+                success: function(response) {
+                    if (response['statusCode'] == 200) {
+                        if (response['body']['status'] == 'success') {
+                            $('#successful-submit').css('display', 'block');
+                            $('#form').css('display', 'none');
+                        }
+                        else {
+                            $('#successful-submit').css('display', 'block');
+                            $('#form').css('display', 'none');
+                        }
+                    }
+                    else {
+                        ('#unsuccessful-submit').css('display', 'block');
+                        $('#form').css('display', 'none');
+                    }
+                }
+            });
+        }
     });
 
 });

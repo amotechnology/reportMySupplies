@@ -19,3 +19,11 @@
     content: " *";
     color: red;
 }
+
+#successful-submit, #unsuccessful-submit {
+    display: none;
+}
+
+#invalid-email, #invalid-division, #invalid-location {
+    display: none;
+}

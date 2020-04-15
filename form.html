@@ -11,11 +11,11 @@
     <link rel="stylesheet" href="css/form.css" type="text/css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
         integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-        <script src="js/locations.js"></script>
-        <script src="js/elements.js"></script>
-        <script src="js/form.js"></script>
-        <script src="js/sendData.js"></script>
-        <!-- <link rel="stylesheet" href="css/form.css"> -->
+    <script src="js/locations.js"></script>
+    <script src="js/divisions.js"></script>
+    <script src="js/elements.js"></script>
+    <script src="js/form.js"></script>
+    <script src="js/sendData.js"></script>
     <title>Report My Supplies -- BJC Supply Chain Tracker</title>
 </head>
 
@@ -24,21 +24,53 @@
         <div class="jumbotron">
             <p class="lead">Report My Supplies: BJC Supply Chain Tracking</p>
         </div>
+        <div id="invalid-email">
+            <div class="alert alert-danger" role="alert">
+                Please fill out the email field with a valid email address
+            </div>
+        </div>
+        <div id="invalid-location">
+            <div class="alert alert-danger" role="alert">
+                Please choose a location
+            </div>
+        </div>
+        <div id="invalid-division">
+            <div class="alert alert-danger" role="alert">
+                Please choose a division
+            </div>
+        </div>
+        <div id="successful-submit">
+            <div class="alert alert-primary" role="alert">
+                Form submitted!
+            </div>
+            <div>
+                <a id="resubmit-form" href="">Click here to submit the form again</a>
+            </div>
+        </div>
+        <div id="unsuccessful-submit">
+            <div class="alert alert-danger" role="alert">
+                There was an error while submitting the form. Please try again.
+            </div>
+            <div>
+                <a id="resubmit-form" href="">Click here to submit the form again</a>
+            </div>
+        </div>
         <div class="form-group" id="form">
             <div id="personal-info">
                 <label for="name-input">Name (Optional)</label>
-                <input type="text" class="form-control" id="exampleInputEmail1" placeholder="Name" aria-required="false">
+                <input type="text" class="form-control" id="exampleInputEmail1" placeholder="Name" aria-required="false" maxlength="60">
                 <br>
                 <label class="required" for="email-input">Email address</label>
-                <input type="email" class="form-control" id="email-input" placeholder="Email" aria-required="true">
+                <input type="email" class="form-control" id="email-input" placeholder="Email" aria-required="true" maxlength="60">
             </div>
-            <div id="select-div"></div>
+            <div id="location-div"></div>
+            <div id="division-div"></div>
             <div id="survey"><br><h6>Do you have enough of the following?</h6></div>
             <div id="short-answer">
                 <br>
                 <div class="form-group">
                     <label for="additional-text">Please indicate any additional equipment or resources that you need</label>
-                    <textarea class="form-control" id="additional-text" rows="2"></textarea>
+                    <textarea class="form-control" id="additional-text" rows="2" maxlength="495"></textarea>
                 </div>
             </div>
             <div id="submit">
