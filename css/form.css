@@ -1,0 +1,21 @@
+:root {
+    --main-bjc-color: #00529b;
+  }
+
+#outer-container{
+    margin-top: 30px;
+}
+
+.lead{
+    text-align: center;
+    color: white;
+}
+
+.jumbotron{
+    background-color: var(--main-bjc-color) !important;
+}
+
+.required:after{
+    content: " *";
+    color: red;
+}
