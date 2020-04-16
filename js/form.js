@@ -6,7 +6,8 @@ const supplyID = ['face-shield', 'isolation-mask', 'n95', 'papr', 'wipe', 'gown'
 $(document).ready(function () {
 
     // we add all locations to the select html element representing locations
-    addLocationSelect('select-div');
+    addLocationSelect('location-div');
+    addDivisionSelect('division-div');
 
 
     for(let i = 0; i < supplies.length; i++){
