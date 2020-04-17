@@ -5,9 +5,10 @@
     "body": {
         "query_type": "count",
         "y_axis": "location",
+        "additional_resources": "yes",
         "ppe":[
             "gowns",
-            "face_masks",
+            "face_shields",
             "n95s"
         ],
         "division": [
