@@ -1,0 +1,20 @@
+// leaving out any filter like "ppe", "division", "location", or "date_range" means no filtering for that
+// So in this example we want every location to be counted
+
+{
+    "body": {
+        "query_type": "count",
+        "y_axis": "location",
+        "ppe":[
+            "gowns",
+            "face_masks",
+            "n95s"
+        ],
+        "division": [
+            "some division",
+            "another division",
+            "Pediatrics"
+        ],
+        "date_range": "2020-04-12 2020-04-19"
+    }
+}
