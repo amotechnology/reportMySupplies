@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	
+	<!-- JQuery, Bootstrap, Bootstrap-Select, Bootstrap-Datepicker  -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/i18n/defaults-en_US.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" 
+		integrity="sha256-bqVeqGdJ7h/lYPq6xrPv/YGzMEb6dNxlfiTUHSgRCp8=" crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" 
+		integrity="sha256-siyOpF/pBWUPgIcQi17TLBkjvNgNQArcmwJB8YvkAgg=" crossorigin="anonymous" />
+
+	<!-- Custom css/js -->
+	<link rel="stylesheet" href="css/portal.css" type="text/css">
+	<script src="js/locations.js"></script>
+	<script src="js/divisions.js"></script>
+	<script src="js/ppe.js"></script>
+	<script src="js/filterSetup.js"></script>
+	<script src="js/shortageTableFunctions.js"></script>
+	
+	<title>RMS - Data Portal</title>
+</head>
+
+<body>
+	<div class="container">
+		<div>
+			<p id="portal-title">BJC Supply Shortages</p>
+		</div>
+		<div id="filters" class="row">
+			<div class="col-sm-3">
+				<label>Location</label>
+				<select id="location-filter" class="selectpicker filters" multiple data-actions-box="true" title="Location"></select>
+			</div>
+			<div class="col-sm-3">
+				<label>Division</label>
+				<select id="division-filter" class="selectpicker filters" multiple data-actions-box="true" title="Division"></select>
+			</div>
+			<div class="col-sm-3">
+				<label>PPE</label>
+				<select id="ppe-filter" class="selectpicker filters" multiple data-actions-box="true" title="PPE"></select>
+			</div>							
+			<div class="col-sm-3">
+				<label>Date Range</label>
+				<!-- https://uxsolutions.github.io/bootstrap-datepicker/?markup=range&format=&weekStart=&startDate=&endDate=&
+					startView=0&minViewMode=0&maxViewMode=4&todayBtn=false&clearBtn=true&language=en&orientation=auto&
+					multidate=&multidateSeparator=&keyboardNavigation=on&forceParse=on#sandbox -->
+				<div class="input-daterange input-group" id="datepicker">
+					<input id="start-date" type="text" class="input-sm form-control" name="start" />
+					<span class="input-group-addon">to</span>
+					<input id="end-date" type="text" class="input-sm form-control" name="end" />
+				</div>
+			</div>
+		</div>
+		<br>
+		<div class="row">
+			<div class="col-sm-12" id="y-axis-filter-div">
+				Use
+				<select id="y-axis-filter" class="selectpicker filters" data-actions-box="true" title="y-axis">
+					<option value="location" selected>Location</option>
+					<option value="division">Division</option>
+					<option value="date">Date</option>
+				</select>
+				as the y-axis
+				&nbsp; &nbsp; 
+				<button id="filter-submit" class="btn">Apply Filters</button>
+				<div class="loader"></div>
+			</div>
+		</div>
+		<div id="grid" class="row">
+			<table id="shortage-table" class="table table-striped"></table>
+		</div>
+	</div>
+</body>
+
+
+</html>
