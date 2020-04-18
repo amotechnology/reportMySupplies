@@ -89,6 +89,7 @@ function queryDatabase(data) {
         dataType: 'json',
         contentType: 'application/json',
         success: function(response) {
+            console.log(response)
             buildTable(data['ppe'], data['y_axis'], response.body, $('#shortage-table'));
         }
     });
@@ -112,6 +113,7 @@ function applyFilter() {
     let data = {
         'query_type': 'count',
         'y_axis': yAxis,
+        'additional_resources': 'yes',
         'location': location,
         'ppe': ppe,
         'division': division,
