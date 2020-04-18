@@ -38,7 +38,7 @@ body {
     background-color: white;
 }
 
-#shortage-table th {
+.main-headers {
     background-color: cadetblue;
     color: cornsilk;
 }
@@ -48,7 +48,7 @@ body {
 }
 
 .y-axis {
-    width: 40%;
+    width: 30%;
 }
 
 .x-axis {
@@ -76,4 +76,20 @@ body {
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+
+.toggle {
+    width: 2%;
+}
+
+.hide-table-padding {
+    padding: 0;
+}
+
+.expand-button:after .accordian-toggle.collapsed {
+    content: '+';
+}
+
+.expand-button:after .accordian-toggle{
+    content: '-';
 }
