@@ -47,7 +47,7 @@ $(document).ready(function() {
         let queryConstraints = {
             'query_type': 'select',
             'y_axis': yAxis,
-            'additional_resources': 'yes',
+            'additional_resources': 'no',
             'location': location,
             'ppe': ppe,
             'division': division,
