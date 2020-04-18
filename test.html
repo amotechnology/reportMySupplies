@@ -1,0 +1,223 @@
+<style>
+    tr.hide-table-padding td {
+        padding: 0;
+      }
+      
+      .expand-button {
+          position: relative;
+      }
+      
+      .accordion-toggle .expand-button:after
+      {
+        position: absolute;
+        left:.75rem;
+        top: 50%;
+        transform: translate(0, -50%);
+        content: '-';
+      }
+      .accordion-toggle.collapsed .expand-button:after
+      {
+        content: '+';
+      }
+</style>
+
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Heading</th>
+                <th scope="col">Heading</th>
+                <th scope="col">Heading</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="accordion-toggle collapsed" id="accordion1" data-toggle="collapse" data-parent="#accordion1" href="#collapseOne">
+                <td class="expand-button"></td>
+                <td>Cell</td>
+                <td>Cell</td>
+                <td>Cell</td>
+            </tr>
+            <tr class="hide-table-padding">
+                <td></td>
+                <td colspan="3">
+                    <div id="collapseOne" class="collapse in p-3">
+                        <div class="row">
+                            <div class="col-2">label</div>
+                            <div class="col-6">value 1</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-2">label</div>
+                            <div class="col-6">value 2</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-2">label</div>
+                            <div class="col-6">value 3</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-2">label</div>
+                            <div class="col-6">value 4</div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr class="accordion-toggle collapsed" id="accordion2" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+  <td class="expand-button"></td>
+  <td>Cell</td>
+  <td>Cell</td>
+  <td>Cell</td>
+  
+  </tr>
+  <tr class="hide-table-padding">
+  <td></td>
+  <td colspan="4">
+  <div id="collapseTwo" class="collapse in p-3">
+    <div class="row">
+      <div class="col-2">label</div>
+      <div class="col-6">value</div>
+    </div>
+    <div class="row">
+      <div class="col-2">label</div>
+      <div class="col-6">value</div>
+    </div>
+    <div class="row">
+      <div class="col-2">label</div>
+      <div class="col-6">value</div>
+    </div>
+    <div class="row">
+      <div class="col-2">label</div>
+      <div class="col-6">value</div>
+    </div>
+  </div></td>
+  </tr>
+      </tbody>
+    </table>
+  </div>
+
+
+  <script>
+    function buildTable(xAxis, yAxis, mainData, subTableData, table) {
+      // used to map between table headers and data indexes
+      const ppeEnum = {
+          face_shields: 'Face Shields',
+          isolation_masks: 'Isolation Masks',
+          n95s: 'N95s',
+          paprs: 'PAPRs',
+          wipes: 'Wipes',
+          gowns: 'Gowns'
+      }
+      const yAxisEnum = {
+          location: 'Location',
+          division: 'Division',
+          date: 'Date'
+      }
+  
+      // clear out the table
+      table.empty();
+  
+      // build headers
+      let headers = `
+          <tr>
+              <th class='main-headers toggle'></th>
+              <th class='y-axis main-headers'>
+                  ${yAxisEnum[yAxis]}
+              </th>`;
+  
+      for (let axis in xAxis) {
+          headers += `
+              <th class='x-axis main-headers'>
+                  ${ppeEnum[xAxis[axis]]}
+              </th>`;
+      }
+      headers += `
+              <th class='x-axis main-headers'>
+                  Comments
+              </th>
+          </tr>`;
+      table.append(headers);
+  
+      // build data rows (and subdata rows with comments)
+      for (let row in mainData) {
+          
+          // build main data row
+          let tableRow = `
+              <tr id='maintable-${row}' class='accordian-toggle collapsed' data-toggle='collapse' data-parent='maintable-${row}' href='#subtable-${row}'>
+                  <td class='expand-button'>
+                      +
+                  </td>
+                  <td class='y-axis'>
+                      ${mainData[row][yAxis]}
+                  </td>`;
+          for (let column in xAxis) {
+              tableRow += `
+                  <td class='x-axis'>
+                      ${mainData[row][xAxis[column]]}
+                  </td>`;
+          }
+          tableRow += `
+                  <td class='x-axis'>
+                      ${mainData[row]['additional_resources']}
+                  </td>
+              </tr>`; 
+          table.append(tableRow);
+  
+          // build subdata row
+          if (mainData[row][yAxis] in subTableData) {
+              let subRow = `
+                  <tr class='hide-table-padding'>
+                      <td style='padding: 0' colspan=9>
+                          <div id='subtable-${row}' class='collapse'>
+                              <table class='table table-striped'>
+                                  <tr>
+                                      <th>Name</th>
+                                      <th>Email</th>
+                                      <th>Comments</th>
+                                  </tr>`;
+  
+              for (let c in subTableData[mainData[row][yAxis]]) {
+                  subRow += `
+                                  <tr>
+                                      <td>
+                                          ${subTableData[mainData[row][yAxis]][c]['Name']}
+                                      </td>
+                                      <td>
+                                          ${subTableData[mainData[row][yAxis]][c]['Email']}
+                                      </td>
+                                      <td>
+                                          ${subTableData[mainData[row][yAxis]][c]['Comments']}
+                                      </td>
+                                  </tr>`;
+              }
+              subRow += `
+                              </table>
+                          </div>
+                      </td>
+                  </tr>`;
+              table.append(subRow);
+          }
+          else {
+              let subRow = `
+                  <tr class='hide-table-padding'>
+                      <td style='padding: 0' colspan=9>
+                          <div id='subtable-${row}' class='collapse' >
+                              <table class='table table-striped'>
+                                  <tr>
+                                      <th>Name</th>
+                                      <th>Email</th>
+                                      <th>Comments</th>
+                                  </tr>
+                              </table>
+                          </div>
+                      </td>
+                  </tr>`;
+              table.append(subRow);
+          }
+      }
+      /**
+       * TODO HERE FIX
+       */
+      // make data rows equal width
+      let widthForXAxis = 60/($('.x-axis').length);
+      $('.x-axis').css('width', `${widthForXAxis}`);                              
+  }
+  </script>
