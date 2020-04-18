@@ -2,20 +2,37 @@
 // So in this example we want every location to be counted
 
 {
-    "body": {
-        "query_type": "count",
-        "y_axis": "location",
-        "additional_resources": "yes",
-        "ppe":[
-            "gowns",
-            "face_shields",
-            "n95s"
-        ],
-        "division": [
-            "some division",
-            "another division",
-            "Pediatrics"
-        ],
-        "date_range": "2020-04-12 2020-04-19"
-    }
+    "query_type": "count",
+    "y_axis": "location",
+    "additional_resources": "yes",
+    "ppe":[
+        "gowns",
+        "face_shields",
+        "n95s"
+    ],
+    "division": [
+        "some division",
+        "another division",
+        "Pediatrics"
+    ],
+    "date_range": "2020-04-12 2020-04-19"
+}
+
+// Here we want the full form responses for people with shortages in:
+// (n95s or paprs or face_shields or wipes or who made comments in additional resources)
+// we make sure that they are in one of the listed divisions, and within the date range
+{
+    "query_type": "select",
+    "ppe": [
+        "n95s",
+        "paprs",
+        "face_shields",
+        "wipes"
+    ],
+    "additional_resources": 'yes',
+    "division":[
+        'Obstetrics and Gynecology',
+        'Neurosurgery'
+    ],
+    "date_range": "2020-04-12 2020-04-19"
 }

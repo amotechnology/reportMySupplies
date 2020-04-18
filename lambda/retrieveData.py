@@ -14,6 +14,9 @@ database = 'ReportMySupplies'
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
+# default ppe list, all options
+ppeList = ['face_shields', 'wipes', 'gowns', 'n95s', 'isolation_masks', 'paprs']
+
 # connect to database
 try:
     conn = pymysql.connect(host=host, user=name, passwd=password, db=database, cursorclass=pymysql.cursors.DictCursor)
@@ -76,6 +79,7 @@ def filter_sql(event, mid_where):
         else :
             mid_where = True
             sql += " where (("
+        sql += "location in ("
         for location in event['location']:
             safe_location = pymysql.escape_string(location)
             sql += "\"{}\", ".format(safe_location)
@@ -140,8 +144,7 @@ def execute(sql):
 
 def submission_count(event):
     
-    # default ppe list, all options
-    ppeList = ['face_shields', 'wipes', 'gowns', 'n95s', 'isolation_masks', 'paprs']
+    global ppeList
 
     # set up y axis to display names along the left column
     if 'y_axis' not in event:
@@ -166,7 +169,7 @@ def submission_count(event):
     if 'additional_resources' in event and event['additional_resources'] == 'yes':
         sql += ", COUNT(CASE WHEN CHAR_LENGTH(additional_resources) > 2 then 1 end) as additional_resources"
 
-    sql += " from FormResponses"
+    sql += " FROM FormResponses"
 
     # get the filters on the sql, or return an error if there is one
     filter_sql_response = filter_sql(event, False)
@@ -178,14 +181,51 @@ def submission_count(event):
     # group rows by our specified y axis
     sql += " GROUP BY " + y_axis + ";"
     
-    print("\n\n" + sql + "\n\n")
-
     return execute(sql)
 
 
 # TODO: this will be used make a query for entire submissions
 def submission_full(event):
-    pass
+    
+    global ppeList
+
+    #are we in the middle of a where statement?
+    mid_where = False
+
+    # The query
+    sql = "SELECT name, employee_email, location, division, face_shields, isolation_masks, n95s, paprs, wipes, gowns, additional_resources FROM FormResponses"
+
+    # choose ones that have shortages of the specified ppe
+    if 'ppe' in event and len(event['ppe']) > 0:
+        for ppe in event['ppe']:
+            if not ppe in ppeList:
+                return invalid_ppe()
+        ppeList = event['ppe']
+        mid_where = True
+        sql += " WHERE (("
+        for ppe in ppeList:
+            sql += "({} = \"no\") OR ".format(ppe)
+    
+    # choose those that have additional resources specified
+    if 'additional_resources' in event and event['additional_resources'] == 'yes':
+        if mid_where:
+            sql += "(CHAR_LENGTH(additional_resources) > 2)"
+        else:
+            mid_where = True
+            sql += " WHERE ((CHAR_LENGTH(additional_resources) > 2"
+    elif(mid_where):
+        sql = sql[:-4]
+
+    # get the filters on the sql, or return an error if there is one
+    filter_sql_response = filter_sql(event, mid_where)
+    if hasattr(filter_sql_response, '__call__'):
+        return filter_sql_response()
+    else:
+        sql += filter_sql_response
+
+    sql += ";"
+
+    return execute(sql)
 
 
 # functions to query the database, or to return different error codes
@@ -202,17 +242,3 @@ def retrieve_data(event, context):
     query_function = query_functions[query_type]
     response = query_function(event)
     return response
-
-result = retrieve_data({
-        "query_type": "count",
-        "y_axis": "location",
-        "additional_resources": "yes",
-        "ppe":[
-            "gowns",
-            "face_shields",
-            "n95s"
-        ],
-        "date_range": "2020-04-12 2020-04-19"
-}, 0)
-
-print(result)
