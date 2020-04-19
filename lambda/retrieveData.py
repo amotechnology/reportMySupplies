@@ -157,12 +157,13 @@ def submission_count(event):
     sql = "SELECT {} as {}".format(y_axis, stated_y_axis)
     
     # set up the counts of ppe
+    ppeRequest = ppeList
     if 'ppe' in event and len(event['ppe']) > 0:
         for ppe in event['ppe']:
             if not ppe in ppeList:
                 return invalid_ppe()
-        ppeList = event['ppe']
-    for ppe in ppeList:
+        ppeRequest = event['ppe']
+    for ppe in ppeRequest:
         sql += ", COUNT(CASE WHEN {} = \"no\" then 1 end) as {}".format(ppe,ppe)
     
     # add a column for additional comments
@@ -200,10 +201,9 @@ def submission_full(event):
         for ppe in event['ppe']:
             if not ppe in ppeList:
                 return invalid_ppe()
-        ppeList = event['ppe']
         mid_where = True
         sql += " WHERE (("
-        for ppe in ppeList:
+        for ppe in event['ppe']:
             sql += "({} = \"no\") OR ".format(ppe)
     
     # choose those that have additional resources specified
@@ -242,3 +242,4 @@ def retrieve_data(event, context):
     query_function = query_functions[query_type]
     response = query_function(event)
     return response
+    
