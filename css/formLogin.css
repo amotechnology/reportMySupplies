@@ -20,10 +20,15 @@
     color: red;
 }
 
-#successful-submit, #unsuccessful-submit {
+#invalid-password {
     display: none;
 }
 
-#invalid-email, #invalid-division, #invalid-location {
-    display: none;
+#password {
+    width: 40%;
+}
+
+#submit-btn {
+    background-color: #00529b;
+    color: white;
 }

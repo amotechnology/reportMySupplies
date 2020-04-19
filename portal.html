@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<!-- JQuery, Bootstrap, Bootstrap-Select, Bootstrap-Datepicker  -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" />
+	<link rel="stylesheet"
+		href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/i18n/defaults-en_US.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"
+		integrity="sha256-bqVeqGdJ7h/lYPq6xrPv/YGzMEb6dNxlfiTUHSgRCp8=" crossorigin="anonymous"></script>
+	<link rel="stylesheet"
+		href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css"
+		integrity="sha256-siyOpF/pBWUPgIcQi17TLBkjvNgNQArcmwJB8YvkAgg=" crossorigin="anonymous" />
+
+	<!-- Custom css/js -->
+	<link rel="stylesheet" href="css/portal.css" type="text/css">
+	<script src="js/locations.js"></script>
+	<script src="js/divisions.js"></script>
+	<script src="js/ppe.js"></script>
+	<script src="js/filterSetup.js"></script>
+	<script src="js/shortageTableFunctions.js"></script>
+
+	<title>RMS - Data Portal</title>
+</head>
+
+<body>
+	<div class="container">
+		<div>
+			<p id="portal-title">BJC Supply Shortages</p>
+		</div>
+		<div id="filters" class="row">
+			<div class="col-sm-3">
+				<label>Location</label>
+				<select id="location-filter" class="selectpicker filters" multiple data-actions-box="true"
+					title="Location"></select>
+			</div>
+			<div class="col-sm-3">
+				<label>Division</label>
+				<select id="division-filter" class="selectpicker filters" multiple data-actions-box="true"
+					title="Division"></select>
+			</div>
+			<div class="col-sm-3">
+				<label>PPE</label>
+				<select id="ppe-filter" class="selectpicker filters" multiple data-actions-box="true"
+					title="PPE"></select>
+			</div>
+			<div class="col-sm-3">
+				<label>Date Range</label>
+				<!-- https://uxsolutions.github.io/bootstrap-datepicker/?markup=range&format=&weekStart=&startDate=&endDate=&
+					startView=0&minViewMode=0&maxViewMode=4&todayBtn=false&clearBtn=true&language=en&orientation=auto&
+					multidate=&multidateSeparator=&keyboardNavigation=on&forceParse=on#sandbox -->
+				<div class="input-daterange input-group" id="datepicker">
+					<input id="start-date" type="text" class="input-sm form-control" name="start" />
+					<span class="input-group-addon">to</span>
+					<input id="end-date" type="text" class="input-sm form-control" name="end" />
+				</div>
+			</div>
+		</div>
+		<br>
+		<div class="row">
+			<div class="col-sm-12" id="y-axis-filter-div">
+				<div class="form-inline">
+					<div class="form-group">
+						Count Comments Too?
+						<input type="checkbox" id="comments-check" class="form-check-input" checked>
+					</div>
+					&nbsp; &nbsp;
+					<div class="form-group">
+						Group by
+						<select id="y-axis-filter" class="selectpicker filters" data-actions-box="true" title="y-axis">
+							<option value="location" selected>Location</option>
+							<option value="division">Division</option>
+							<option value="date">Date</option>
+						</select>
+					</div>
+					&nbsp; &nbsp;
+					<button id="filter-submit" class="btn">Apply Filters</button>
+					<div class="loader"></div>
+					&nbsp; &nbsp;
+					<div class = "form-group">
+						<!-- Button trigger modal -->
+						<button type="button" class="btn btn-info" data-toggle="modal" data-target="#info-modal">
+							How to Use the Portal
+						</button>
+						<!-- Modal -->
+						<div class="modal fade" id="info-modal" tabindex="-1" role="dialog" aria-labelledby="Info-Modal" aria-hidden="true">
+							<div class="modal-dialog" role="document">
+							<div class="modal-content">
+								<div class="modal-header">
+								<h3 class="modal-title" id="info-modal-title">How to Use the Portal</h3>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+								</div>
+								<div class="modal-body" id="info-modal-body">
+								<h4>Overview</h4>
+								This portal shows summary statistics and full form responses from ReportMySupplies.app.
+								The default table shows the number of shortages of each type of PPE reported today, grouped by location.
+								<br><br>
+								<h4>Filters and the Main Shortage Table</h4>
+								Use the filters at the top of the page to limit the data you're presented with.
+								You may specify:
+								<ul>
+									<li>
+										Division (any or all)
+									</li>
+									<li>
+										Location (any or all)
+									</li>
+									<li>
+										A range of dates to search
+									</li>
+									<li>
+										Which types of PPE shortages to show (any or all)
+									</li>
+									<li>
+										Whether to include a column counting the number of responses with additional comments
+									</li>
+								</ul>
+								You may also choose to group the numbers of shortages by location, division, or date.
+								Click 'Apply Filters' to reload the shortages table with your desired information.
+								<br><br>
+								<h4>Sub-Tables (How to access entire form submissions)</h4>
+								Lets say that our table tells us that location 5400 has a shortage reported of n95s,
+								as well as two reported shortages of gowns.
+								If I'd like to see the full form responses showing all three of these shortages
+								I can click on "5400". If I'd like to only see the form response that reported the shortage of n95s
+								I can click on the "1" in the n95s column.
+								Either way, a sub-table will appear displaying the full form responses that I requested.
+								Clicking on the same cell that opened the sub-table will close the sub-table.
+								<br><br>
+								<h4>Important Notes:</h4>
+								<ul>
+									<li>
+										Specifying PPE, or whether to include comments, will limit the columns shown in the main shortage table.
+										It wil NOT limit the columns in any sub-table, which always display the full responses from the form.
+									</li>
+									<li>
+										There is not yet functionality to see (or count) responses that did not indicate shortages.
+									</li>
+									<li>
+										Opening a sub-table with many thousands of form responses may cause a Timeout error after ten seconds.
+									</li>
+								</div>
+								<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+								</div>
+							</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="grid" class="row">
+			<table id="shortage-table" class="table accordian"></table>
+		</div>
+	</div>
+</body>
+
+
+</html>
