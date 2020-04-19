@@ -110,6 +110,62 @@ function buildTable(xAxis, hasAdditionalResources, yAxis, counts, table) {
     // clear out the table
     table.empty();
 
+    // build the title
+    let title = `<tr><th class='y-axis main-headers' colspan="100%"><h4>Number of shortages of`;
+    
+    // indicating the ppe shortages (and whether they also want comments) that we're looking for
+    if ($("#ppe-filter option:not(:selected)").length == 0) {
+        title += ` all types of ppe`;
+    } else {
+        let ppe = $("#ppe-filter").val();
+        if (ppe.length == 1){
+            title += ` ${ppe[0]}`;
+        } else {
+            title += ` ${ppe.length} types of ppe`;
+        }
+    }
+    if (hasAdditionalResources) {
+        title += ", and number of additional comments,";
+    }
+    title += " reported";
+
+    // what is the date or date range in question?
+    if ($("#start-date").val() == $('#end-date').val()) {
+        title += ` on ${$("#start-date").val()}`;
+    } else {
+        title += ` from ${$("#start-date").val()} to ${$("#end-date").val()}`;
+    }
+
+    // what location filters were there?
+    if ($("#location-filter option:not(:selected)").length == 0) {
+        title += ` in all locations and`;
+    } else {
+        let locations = $("#location-filter").val();
+        if (locations.length == 1){
+            title += ` in the location ${locations[0]} and`;
+        } else {
+            title += ` in ${locations.length} locations and`;
+        }
+    }
+
+    // what division filters were there?
+    if ($("#division-filter option:not(:selected)").length == 0) {
+        title += ` all divisions.`;
+    } else {
+        let divisions = $("#division-filter").val();
+        if (divisions.length == 1){
+            title += ` the division ${divisions[0]}.`;
+        } else {
+            title += ` ${divisions.length} divisions.`;
+        }
+    }
+
+    //per PPE type${hasAdditionalResources? " and comments added" : ""}`
+    //$("#location-filter option:not(:selected)").length == 0
+
+    title += '</h4></th></tr>';
+    table.append(title);
+
     // build headers
     let headers = `<tr><th class='y-axis main-headers'>${yAxisEnum[yAxis]}</th>`;
     for (let axis in xAxis) {
@@ -120,9 +176,15 @@ function buildTable(xAxis, hasAdditionalResources, yAxis, counts, table) {
     }
     table.append(headers);
 
+    // If the query yielded no shortages
+    noResults = true;
+
     // build data rows (and subdata rows with comments)
     for (let row in counts) {
         
+        // we know we got data now
+        noResults = false;
+
         // build main data row
         let tableRow = `<tr><td id='${yAxis}-${row}' class='y-axis accordian-toggle collapsed closed'
             data-toggle='collapse' data-parent='${yAxis}-${row}' href='#subtable-${row}' >${counts[row][yAxis]}</td>`;
@@ -138,6 +200,11 @@ function buildTable(xAxis, hasAdditionalResources, yAxis, counts, table) {
         let subRow = `<tr class='hide-table-padding'><td style='padding: 0' colspan=9><div id='subtable-${row}' class='collapse'>
             <table class="table"><tr><td>Loading.......</td></tr></table></div></td></tr>`;
         table.append(subRow);
+    }
+
+    // Prints a message to let the user know their query yielded no shortages
+    if (noResults) {
+        table.append(`<tr><th colspan='100%'>No shortages${hasAdditionalResources? " or comments":""} match the specified filters</th></tr>`);
     }
 
     let width = 70/xAxis.length;

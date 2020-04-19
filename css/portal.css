@@ -93,3 +93,7 @@ body {
     background-color: yellowgreen;
     font-weight: bold;
 }
+
+#info-modal-body{
+    text-align: left;
+}
