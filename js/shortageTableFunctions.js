@@ -11,6 +11,19 @@ const yAxisEnum = {
     division: 'Division',
     date: 'Date'
 }
+const databaseColumns = {
+    name: 'Name',
+    employee_email: 'Email',
+    location: 'Location',
+    division: 'Division',
+    face_shields: 'Face Shields',
+    isolation_masks: 'Isolation Masks',
+    n95s: 'N95s',
+    paprs: 'PAPRs',
+    wipes: 'Wipes',
+    gowns: 'Gowns',
+    additional_resources: 'Comments'
+}
 
 /**
  * Sets up the document with default filters set and pulls data from database
@@ -24,7 +37,9 @@ $(document).ready(function() {
         applyFilter();
     });
 
-    $('#shortage-table').on('click', 'td', function() {
+    $('#shortage-table').on('click', '.closed', function() {
+        $(this).removeClass('closed');
+        $(this).addClass('open');
         let yAxis = $('#y-axis-filter').val();
         let location = $('#location-filter').val();
         let division = $('#division-filter').val();
@@ -35,7 +50,7 @@ $(document).ready(function() {
         let groupBy = $(this).attr('id').split("-")[0];
         let dataIndex = $(this).attr('id').split("-")[1];
         if (groupBy in ppeEnum) {
-            ppe = [String(groupBy)];
+            ppe = [groupBy];
         }
         if (yAxis == "location") {
             location = [$(`#location-${dataIndex}`).text()];
@@ -53,31 +68,18 @@ $(document).ready(function() {
             'division': division,
             'date_range': `${convertDateToString(startDate)} ${convertDateToString(endDate)}`
         };
-        let lambdaApiUrl = 'https://5alsy89r1j.execute-api.us-east-2.amazonaws.com/prod/data';
-        console.log(queryConstraints);
-        $.ajax({
-            type: 'POST',
-            url: lambdaApiUrl,
-            crossDomain: true,
-            data: JSON.stringify(queryConstraints),
-            dataType: 'json',
-            contentType: 'application/json',
-            success: function(selectStats) {
-                console.log(selectStats)
-                subTableData = setUpSubData(selectStats.body, queryConstraints['y_axis'])
-                $(`#subtable-${dataIndex}`).empty();
-                let subRow = `<table class="table"><tr><th>Name</th><th>Email</th><th>Comments</th></tr>`;
+        queryDatabase(queryConstraints, $(`#subtable-${dataIndex}`));
+    });
 
-                for (let c in subTableData[location]) {
-                    subRow += `<tr><td>${subTableData[location][c]['Name']}</td>`;
-                    subRow += `<td>${subTableData[location][c]['Email']}</td>`;
-                    subRow += `<td>${subTableData[location][c]['Comments']}</td></tr>`;
-                }
-                subRow += `</table>`;
-                $(`#subtable-${dataIndex}`).append(subRow);
-            }
-        });
-    })
+    $('#shortage-table').on('click', '.open', function () {
+        console.log("here")
+        $(this).removeClass('open');
+        $(this).addClass('closed');
+        let dataIndex = $(this).attr('id').split("-")[1];
+        $(`#subtable-${dataIndex}`).empty();
+        $(`#subtable-${dataIndex}`).append(`<table><tr><td>Loading.....</td></tr></table>`);
+    });
+
 });
 
 /**
@@ -93,7 +95,7 @@ function buildTable(xAxis, yAxis, counts, table) {
     table.empty();
 
     // build headers
-    let headers = `<tr><th class='main-headers toggle'></th><th class='y-axis main-headers'>${yAxisEnum[yAxis]}</th>`;
+    let headers = `<tr><th class='y-axis main-headers'>${yAxisEnum[yAxis]}</th>`;
     for (let axis in xAxis) {
         headers += `<th class='x-axis main-headers'>${ppeEnum[xAxis[axis]]}</th>`;
     }
@@ -104,12 +106,10 @@ function buildTable(xAxis, yAxis, counts, table) {
     for (let row in counts) {
         
         // build main data row
-        let tableRow = 
-            `<tr><td class='expand-button'>+</td>
-            <td id='${yAxis}-${row}' class='y-axis accordian-toggle collapsed'
+        let tableRow = `<tr><td id='${yAxis}-${row}' class='y-axis accordian-toggle collapsed closed'
             data-toggle='collapse' data-parent='${yAxis}-${row}' href='#subtable-${row}' >${counts[row][yAxis]}</td>`;
         for (let column in xAxis) {
-            tableRow += `<td id='${xAxis[column]}-${row}' class='x-axis accordian-toggle collapsed' data-toggle='collapse' data-parent='${xAxis[column]}-${row}' href='#subtable-${row}'>${counts[row][xAxis[column]]}</td>`;
+            tableRow += `<td id='${xAxis[column]}-${row}' class='x-axis accordian-toggle collapsed closed' data-toggle='collapse' data-parent='${xAxis[column]}-${row}' href='#subtable-${row}'>${counts[row][xAxis[column]]}</td>`;
         }
         tableRow += `<td class='x-axis'>${counts[row]['additional_resources']}</td></tr>`; 
         table.append(tableRow);
@@ -117,46 +117,48 @@ function buildTable(xAxis, yAxis, counts, table) {
         // build subdata row
         let subRow = `<tr class='hide-table-padding'><td style='padding: 0' colspan=9><div id='subtable-${row}' class='collapse'>
             <table class="table"><tr><td>Loading.......</td></tr></table></div></td></tr>`;
-        // let subRow = `<tr class='hide-table-padding'><td style='padding: 0' colspan=9><div>
-        //     <table class="table"><tr><td>Loading.......</td></tr></table></div></td></tr>`;
         table.append(subRow);
     }
 
-    $('.x-axis').css('width', `30px`);                              
+    let width = 70/xAxis.length;
+    $('.x-axis').css('width', `${width}%`);                              
 }
 
 /**
- * This function takes the queried database rows and organizes by the yAxis
- * so they can be put as the subrows in the main database table
- * @param {array} selectData array of dictionaries that were the queried rows
- * @param {string} yAxis the specified y-axis from the filter in which to organize the queries by
+ * 
+ * @param {array} selectResult the result of the select query which is an array of table rows
+ * @param {jQuery Element} tableDiv the div holding the subtable to build
  */
-function setUpSubData(selectData, yAxis) {
-    reportedComments = {};
-    for (let row in selectData) {
-        if (selectData[row]['additional_resources'] != '') {
-            comment = {
-                'Name': selectData[row]['name'],
-                'Email': selectData[row]['employee_email'],
-                'Comments': selectData[row]['additional_resources']
-            }
-            if (selectData[row][yAxis] in reportedComments) {
-                reportedComments[selectData[row][yAxis]].push(comment)
+function buildSubTable(selectResult, tableDiv) {
+    tableDiv.empty();
+    let subTable = `<table class='table'><tr><th>Name</th><th>Email</th><th>Location</th>`;
+    subTable += `<th>Division</th><th>Face Shields</th><th>Isolation Masks</th><th>N95s</th>`;
+    subTable += `<th>PAPRs</th><th>Wipes</th><th>Gowns</th><th>Comments</th></tr>`
+
+    for (let row in selectResult) {
+        subTable += `<tr>`;
+        for (let col in databaseColumns) {
+            if (databaseColumns[col] == 'additional_resources') {
+                subTable += `<td>${selectResult[row][col]}</td>`;
             }
             else {
-                reportedComments[selectData[row][yAxis]] = [comment]
+                subTable += `<td>${selectResult[row][col]}</td>`;
             }
         }
+        subTable += `</tr>`;
     }
-    return reportedComments;
+    subTable += `</table>`;
+    tableDiv.append(subTable);
 }
 
 /**
  * 
  * @param {dict} queryConstraints specifies query constraints for supply shortage data
+ * @param {jQuery Element} table the place to build the respective table
  */
-function queryDatabase(queryConstraints) {
+function queryDatabase(queryConstraints, table) {
     let lambdaApiUrl = 'https://5alsy89r1j.execute-api.us-east-2.amazonaws.com/prod/data';
+    let result = '';
     $.ajax({
         type: 'POST',
         url: lambdaApiUrl,
@@ -164,10 +166,17 @@ function queryDatabase(queryConstraints) {
         data: JSON.stringify(queryConstraints),
         dataType: 'json',
         contentType: 'application/json',
-        success: function(countingStats) {
-            buildTable(queryConstraints['ppe'], queryConstraints['y_axis'], countingStats.body, $('#shortage-table'));
+        success: function(response) {
+            result = response.body;
+            if (queryConstraints['query_type'] == 'count') {
+                buildTable(queryConstraints['ppe'], queryConstraints['y_axis'], result, table);
+            }
+            else {
+                buildSubTable(response.body, table);
+            }
         }
     });
+    return result;
 }
 
 /**
@@ -195,7 +204,7 @@ function applyFilter() {
         'date_range': `${convertDateToString(startDate)} ${convertDateToString(endDate)}`
     };
 
-    queryDatabase(queryConstraints);
+    queryDatabase(queryConstraints, $('#shortage-table'));
 
     // hide loader
     $('.loader').css('display', 'none');
