@@ -4,6 +4,8 @@
 import pymysql
 import sys
 import logging
+import json
+import datetime
 
 # info to access database
 host = 'reportmysupplies.czvyghkkrqot.us-east-2.rds.amazonaws.com'
@@ -185,7 +187,7 @@ def submission_count(event):
     return execute(sql)
 
 
-# TODO: this will be used make a query for entire submissions
+# make a query to select entire submissions
 def submission_full(event):
     
     global ppeList
@@ -194,7 +196,7 @@ def submission_full(event):
     mid_where = False
 
     # The query
-    sql = "SELECT name, employee_email, location, division, face_shields, isolation_masks, n95s, paprs, wipes, gowns, additional_resources FROM FormResponses"
+    sql = "SELECT timestamp, name, employee_email, location, division, face_shields, isolation_masks, n95s, paprs, wipes, gowns, additional_resources FROM FormResponses"
 
     # choose ones that have shortages of the specified ppe
     if 'ppe' in event and len(event['ppe']) > 0:
@@ -241,5 +243,16 @@ def retrieve_data(event, context):
     query_type = event.get("query_type", "no_query_type_specified")
     query_function = query_functions[query_type]
     response = query_function(event)
-    return response
-    
+    return json.dumps(response, default = str)
+
+result = retrieve_data({
+    'additional_resources': "no",
+'date_range': "2020-04-18 2020-04-19",
+'division': ["Anesthesiology", "Medicine", "Neurology", "Neuroscience", "Neurosurgery", "Obstetrics and Gynecology", "Ophthalmology and Visual Sciences", "Orthopaedic Surgery", "Otolaryngology", "Pathology and Immunology", "Pediatrics", "Radiation Oncology", "Radiology", "Surgury", "Division of Cardiothoracic Surgery", "Division of General Surgery", "Section of Acute and Critical Care Surgery", "Section of Colon and Rectal Surgery", "Section of Hepatobiliary-Pancreatic & GI Surgery", "Section of Minimally Invasive Surgery", "Section of Surgical Oncology", "Section of Transplant Surgery", "Section of Vascular Surgery", "Division of Pediatric Surgery", "Division of Plastic and Reconstructive Surgery", "Division of Public Health Sciences", "Division of Urologic Surgery", "Allergy and Immunology", "Bioorganic Chemistry and Molecular Pharmacology", "Bone and Mineral Diseases", "Cardiology/Cardiovascular Diseases", "Dermatology", "Endocrinology/Metabolism/Lipid Research", "Gastroenterology", "General Medical Sciences", "General Medicine", "Geriatrics and Nutritional Sciences", "Hematology", "Hospital Medicine", "Infectious Diseases", "Nephrology", "Oncology", "Palliative Medicine", "Pulmonary and Critical Care Medicine", "Rheumatology"],
+'location': ["9200 Cardiology"],
+'ppe': [],
+'query_type': "select",
+'y_axis': "location",
+},0)
+
+print(result)

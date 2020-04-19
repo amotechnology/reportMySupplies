@@ -88,3 +88,8 @@ body {
 .accordian-toggle:active {
     box-shadow: inset 0 0 5px rgba(0,0,0,.4);
 }
+
+.highlighted{
+    background-color: yellowgreen;
+    font-weight: bold;
+}

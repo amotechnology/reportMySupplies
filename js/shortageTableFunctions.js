@@ -12,6 +12,7 @@ const yAxisEnum = {
     date: 'Date'
 }
 const databaseColumns = {
+    timestamp: "Time",
     name: 'Name',
     employee_email: 'Email',
     location: 'Location',
@@ -38,19 +39,29 @@ $(document).ready(function() {
     });
 
     $('#shortage-table').on('click', '.closed', function() {
+        $(this).addClass("highlighted");
         $(this).removeClass('closed');
+
         $(this).addClass('open');
         let yAxis = $('#y-axis-filter').val();
         let location = $('#location-filter').val();
         let division = $('#division-filter').val();
         let ppe = $('#ppe-filter').val();
         let startDate = new Date($('#start-date').val());
+        startDate = convertDateToString(startDate);
         let endDate = new Date($('#end-date').val());
+        endDate = convertDateToString(endDate);
+        let additionalResources  = 'no';
 
         let groupBy = $(this).attr('id').split("-")[0];
         let dataIndex = $(this).attr('id').split("-")[1];
+        
         if (groupBy in ppeEnum) {
             ppe = [groupBy];
+        }
+        if (groupBy == 'additional_resources') {
+            ppe = [];
+            additionalResources = 'yes';
         }
         if (yAxis == "location") {
             location = [$(`#location-${dataIndex}`).text()];
@@ -58,15 +69,19 @@ $(document).ready(function() {
         if (yAxis == "division") {
             division = [$(`#division-${dataIndex}`).text()];
         }
+        if (yAxis == "date") {
+            startDate = $(`#date-${dataIndex}`).text();
+            endDate = startDate;
+        }
 
         let queryConstraints = {
             'query_type': 'select',
             'y_axis': yAxis,
-            'additional_resources': 'no',
+            'additional_resources': additionalResources,
             'location': location,
             'ppe': ppe,
             'division': division,
-            'date_range': `${convertDateToString(startDate)} ${convertDateToString(endDate)}`
+            'date_range': `${startDate} ${endDate}`
         };
         queryDatabase(queryConstraints, $(`#subtable-${dataIndex}`));
     });
@@ -74,6 +89,7 @@ $(document).ready(function() {
     $('#shortage-table').on('click', '.open', function () {
         console.log("here")
         $(this).removeClass('open');
+        $(this).removeClass('highlighted');
         $(this).addClass('closed');
         let dataIndex = $(this).attr('id').split("-")[1];
         $(`#subtable-${dataIndex}`).empty();
@@ -90,7 +106,7 @@ $(document).ready(function() {
  *                         the main table rows
  * @param {jQuery Selector} table the table that needs to be rebuilt
  */
-function buildTable(xAxis, yAxis, counts, table) {
+function buildTable(xAxis, hasAdditionalResources, yAxis, counts, table) {
     // clear out the table
     table.empty();
 
@@ -99,7 +115,9 @@ function buildTable(xAxis, yAxis, counts, table) {
     for (let axis in xAxis) {
         headers += `<th class='x-axis main-headers'>${ppeEnum[xAxis[axis]]}</th>`;
     }
-    headers += `<th class='x-axis main-headers'>Comments</th></tr>`;
+    if (hasAdditionalResources == 'yes') {
+        headers += `<th class='x-axis main-headers'>Comments</th></tr>`;
+    }
     table.append(headers);
 
     // build data rows (and subdata rows with comments)
@@ -111,7 +129,9 @@ function buildTable(xAxis, yAxis, counts, table) {
         for (let column in xAxis) {
             tableRow += `<td id='${xAxis[column]}-${row}' class='x-axis accordian-toggle collapsed closed' data-toggle='collapse' data-parent='${xAxis[column]}-${row}' href='#subtable-${row}'>${counts[row][xAxis[column]]}</td>`;
         }
-        tableRow += `<td class='x-axis'>${counts[row]['additional_resources']}</td></tr>`; 
+        if (hasAdditionalResources == 'yes') {
+            tableRow += `<td id='additional_resources-${row}' class='x-axis accordian-toggle collapsed closed' data-toggle='collapse' data-parent='additional_resources-${row}' href='#subtable-${row}'>${counts[row]['additional_resources']}</td>`;
+        }
         table.append(tableRow);
 
         // build subdata row
@@ -126,12 +146,21 @@ function buildTable(xAxis, yAxis, counts, table) {
 
 /**
  * 
+ * @param {string} error The error received (probably timeout)
+ * @param {jQuery Element} tableDiv the div holding the subtable to build
+ */
+function buildSubTableError(error, tableDiv) {
+    tableDiv.html("<p>Error (Probably from Lambda): "+error+"</p>");
+}
+
+/**
+ * 
  * @param {array} selectResult the result of the select query which is an array of table rows
  * @param {jQuery Element} tableDiv the div holding the subtable to build
  */
 function buildSubTable(selectResult, tableDiv) {
     tableDiv.empty();
-    let subTable = `<table class='table'><tr><th>Name</th><th>Email</th><th>Location</th>`;
+    let subTable = `<table class='table'><tr><th>Time</th><th>Name</th><th>Email</th><th>Location</th>`;
     subTable += `<th>Division</th><th>Face Shields</th><th>Isolation Masks</th><th>N95s</th>`;
     subTable += `<th>PAPRs</th><th>Wipes</th><th>Gowns</th><th>Comments</th></tr>`
 
@@ -167,14 +196,19 @@ function queryDatabase(queryConstraints, table) {
         dataType: 'json',
         contentType: 'application/json',
         success: function(response) {
-            result = response.body;
-            if (queryConstraints['query_type'] == 'count') {
-                buildTable(queryConstraints['ppe'], queryConstraints['y_axis'], result, table);
+            if (response.constructor == Object && "errorMessage" in response) {
+                buildSubTableError(response.errorMessage, table);
+            } else {
+                result = JSON.parse(response).body;
+                if (queryConstraints['query_type'] == 'count') {
+                    buildTable(queryConstraints['ppe'], queryConstraints['additional_resources'], queryConstraints['y_axis'], result, table);
+                }
+                else {
+                    buildSubTable(result, table);
+                }
             }
-            else {
-                buildSubTable(response.body, table);
-            }
-        }
+        },
+        timeout: 12000
     });
     return result;
 }
@@ -193,11 +227,15 @@ function applyFilter() {
     let ppe = $('#ppe-filter').val();
     let startDate = new Date($('#start-date').val());
     let endDate = new Date($('#end-date').val());
+    let additionalResources = 'no';
+    if ($('#comments-check').prop("checked") == true) {
+        additionalResources = 'yes';
+    }
 
     let queryConstraints = {
         'query_type': 'count',
         'y_axis': yAxis,
-        'additional_resources': 'yes',
+        'additional_resources': additionalResources,
         'location': location,
         'ppe': ppe,
         'division': division,
