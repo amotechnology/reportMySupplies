@@ -32,8 +32,21 @@
 
 <body>
 	<div class="container">
-		<div>
-			<p id="portal-title">BJC Supply Shortages</p>
+		<div id="header" class="row">
+			<div class="col-sm-3 header-buttons-div">
+				<!-- Button trigger modal -->
+				<button type="button" class="btn btn-info header-buttons" data-toggle="modal" data-target="#info-modal">
+					How to Use the Portal
+				</button>
+			</div>
+			<div class="col-sm-6">
+				<p id="portal-title">BJC Supply Shortages</p>
+			</div>
+			<div class="col-sm-3 header-buttons-div">
+				<button type="button" class="btn btn-info header-buttons" data-toggle="modal" data-target="#full-responses-modal">
+					View All Responses
+				</button>
+			</div>
 		</div>
 		<div id="filters" class="row">
 			<div class="col-sm-3">
@@ -85,10 +98,6 @@
 					<div class="loader"></div>
 					&nbsp; &nbsp;
 					<div class = "form-group">
-						<!-- Button trigger modal -->
-						<button type="button" class="btn btn-info" data-toggle="modal" data-target="#info-modal">
-							How to Use the Portal
-						</button>
 						<!-- Modal -->
 						<div class="modal fade" id="info-modal" tabindex="-1" role="dialog" aria-labelledby="Info-Modal" aria-hidden="true">
 							<div class="modal-dialog" role="document">
@@ -155,6 +164,25 @@
 							</div>
 							</div>
 						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- Modal -->
+		<div class="modal fade" id="full-responses-modal" tabindex="-1" role="dialog" aria-labelledby="Info-Modal" aria-hidden="true">
+			<div class="modal-dialog modal-lg" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h3 class="modal-title" id="responses-modal-title">All Responses</h3>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body" id="responses-modal-body">
+						Loading........
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
 					</div>
 				</div>
 			</div>

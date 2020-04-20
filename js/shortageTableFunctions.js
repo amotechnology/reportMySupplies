@@ -32,6 +32,7 @@ const databaseColumns = {
 $(document).ready(function() {
     setDefaultDateRange(new Date(), new Date());
     applyFilter();
+    getAllResponses();
 
     // when the "Apply Filters" button is pressed
     $('#filter-submit').click(function() {
@@ -98,6 +99,56 @@ $(document).ready(function() {
 
 });
 
+
+function getAllResponses() {
+    queryConstraints = {
+        'query_type': 'all'
+    }
+
+    let lambdaApiUrl = 'https://5alsy89r1j.execute-api.us-east-2.amazonaws.com/prod/data';
+    $.ajax({
+        type: 'POST',
+        url: lambdaApiUrl,
+        crossDomain: true,
+        data: JSON.stringify(queryConstraints),
+        dataType: 'json',
+        contentType: 'application/json',
+        success: function(response) {
+            if (response.constructor == Object && "errorMessage" in response) {
+                console.log(response.errorMessage);
+                buildAllResponsesTable(response.errorMessage);
+            } else {
+                result = JSON.parse(response).body;
+                buildAllResponsesTable(result);
+                console.log(JSON.parse(response))
+            }
+        },
+        timeout: 12000
+    });
+}
+
+function buildAllResponsesTable(responses) {
+    $('#responses-modal-body').empty();
+
+    let table = `<table class='table'><tr>`;
+    for (let col in databaseColumns) {
+        table += `<th class='main-headers'>${databaseColumns[col]}</th>`
+    }
+    table += `</tr>`;
+
+    for (let entry in responses) {
+        table += `<tr>`
+        for (let col in databaseColumns) {
+            table += `<td>${responses[entry][col]}</td>`
+        }
+        table += `</tr>`;
+    }
+
+    table += `</table>`;
+    $('#responses-modal-body').append(table);
+}
+
+
 /**
  * 
  * @param {array} xAxis the labels for the the x-axis
@@ -119,7 +170,7 @@ function buildTable(xAxis, hasAdditionalResources, yAxis, counts, table) {
     } else {
         let ppe = $("#ppe-filter").val();
         if (ppe.length == 1){
-            title += ` ${ppe[0]}`;
+            title += ` ${ppeEnum[ppe[0]]}`;
         } else {
             title += ` ${ppe.length} types of ppe`;
         }
@@ -227,7 +278,7 @@ function buildSubTableError(error, tableDiv) {
  */
 function buildSubTable(selectResult, tableDiv) {
     tableDiv.empty();
-    let subTable = `<table class='table'><tr><th>Time</th><th>Name</th><th>Email</th><th>Location</th>`;
+    let subTable = `<table class='table subTable'><tr><th>Time</th><th>Name</th><th>Email</th><th>Location</th>`;
     subTable += `<th>Division</th><th>Face Shields</th><th>Isolation Masks</th><th>N95s</th>`;
     subTable += `<th>PAPRs</th><th>Wipes</th><th>Gowns</th><th>Comments</th></tr>`
 
