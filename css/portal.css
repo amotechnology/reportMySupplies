@@ -113,3 +113,8 @@ body {
 #responses-modal-body {
     overflow: scroll;
 }
+
+.subTable {
+    font-size: 12px;
+    margin-top: 10px;
+}
