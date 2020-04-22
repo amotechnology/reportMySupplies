@@ -22,7 +22,7 @@ $(document).ready(function () {
                 'email':emailValue
             }
 
-            let lambdaApiUrl = 'https://5alsy89r1j.execute-api.us-east-2.amazonaws.com/prod/form';
+            let lambdaApiUrl = 'https://5alsy89r1j.execute-api.us-east-2.amazonaws.com/prod/verifyemaildomain';
            
             $.ajax({
                 type: 'POST',
@@ -46,11 +46,14 @@ $(document).ready(function () {
                         }
                     }
                     else {
+                        console.log("no email");
                         $('#invalid-email-domain').css('display', 'none');
                         $('#valid-email-domain').css('display', 'none');
                     }
                 }
             })
+        }else{
+            console.log("Not a real email");
         }
     })
 });
