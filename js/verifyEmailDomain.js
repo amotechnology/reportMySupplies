@@ -36,13 +36,11 @@ $(document).ready(function () {
                         if (response['body']['status'] == 'success') {
                             console.log("Sent to API. Valid email response");
                             $('#valid-email-domain').css('display', 'block');
-                            $('#invalid-email-domain').css('display', 'none');
                         }
                         else {
                             console.log("invalid email");
                             $('#invalid-email-domain').css('display', 'block');
                             $('#valid-email-domain').css('display', 'none');
-                            $('#form').css('display', 'none');
                         }
                     }
                     else {
