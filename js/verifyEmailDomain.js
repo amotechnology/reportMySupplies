@@ -18,13 +18,12 @@ $(document).ready(function () {
     emailInput.change(function(){
         emailValue = emailInput.val();
         if(validateEmail(emailValue)){
-        
             let data = {
                 'email':emailValue
             }
 
             let lambdaApiUrl = 'https://5alsy89r1j.execute-api.us-east-2.amazonaws.com/prod/form';
-
+           
             $.ajax({
                 type: 'POST',
                 url: lambdaApiUrl,
@@ -35,10 +34,12 @@ $(document).ready(function () {
                 success: function(response) {
                     if (response['statusCode'] == 200) {
                         if (response['body']['status'] == 'success') {
+                            console.log("Sent to API. Valid email response");
                             $('#valid-email-domain').css('display', 'block');
                             $('#invalid-email-domain').css('display', 'none');
                         }
                         else {
+                            console.log("invalid email");
                             $('#invalid-email-domain').css('display', 'block');
                             $('#valid-email-domain').css('display', 'none');
                             $('#form').css('display', 'none');
