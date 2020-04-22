@@ -1,12 +1,10 @@
 import json
 import re
 
-def lambda_handler(event, context):
+def verifyEmailDomain(event, context):
     domain = re.compile('^[a-zA-Z0-9_.+-]+@(?:(?:[a-zA-Z0-9-]+\.)?[a-zA-Z]+\.)?(bjc.org|wustl.edu)$')
-    email = event
     try:
-        #if domain == event['email']:
-        if (domain.match(email) != None ): 
+        if (domain.match(event['email']) != None ): 
             return {
                 'statusCode': 200,
                 'body': json.dumps('Valid Email')
