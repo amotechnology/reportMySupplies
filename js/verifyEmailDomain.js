@@ -33,7 +33,7 @@ $(document).ready(function () {
                 contentType: 'application/json',
                 success: function(response) {
                     if (response['statusCode'] == 200) {
-                        if (response['body']['status'] == 'success') {
+                        if (response['body'] == 'success') {
                             console.log("Sent to API. Valid email response");
                             $('#valid-email-domain').css('display', 'block');
                             $('#invalid-email-domain').css('display', 'none');
