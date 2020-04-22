@@ -35,12 +35,10 @@ $(document).ready(function () {
                     if (response['statusCode'] == 200) {
                         console.log("JSON Response: "+ JSON.stringify(response));
                         if (response['body'] == 'success') {
-                            console.log("Sent to API. Valid email response");
                             $('#valid-email-domain').css('display', 'block');
                             $('#invalid-email-domain').css('display', 'none');
                         }
                         else {
-                            console.log("invalid email");
                             $('#invalid-email-domain').css('display', 'block');
                             $('#valid-email-domain').css('display', 'none');
                         }
