@@ -168,7 +168,7 @@ $(document).ready(function () {
                 'additionalResources': additionalInfo
             }
 
-            let lambdaApiUrl = 'https://5alsy89r1j.execute-api.us-east-2.amazonaws.com/prod/form';
+            let lambdaApiUrl = 'https://5alsy89r1j.execute-api.us-east-2.amazonaws.com/prod/verifyemaildomain';
 
             $.ajax({
                 type: 'POST',
