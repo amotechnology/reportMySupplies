@@ -88,7 +88,6 @@ $(document).ready(function() {
     });
 
     $('#shortage-table').on('click', '.open', function () {
-        console.log("here")
         $(this).removeClass('open');
         $(this).removeClass('highlighted');
         $(this).addClass('closed');
