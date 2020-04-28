@@ -24,6 +24,6 @@
     display: none;
 }
 
-#invalid-email, #invalid-division, #invalid-location {
+#invalid-email-domain, #valid-email-domain, #invalid-email, #invalid-division, #invalid-location {
     display: none;
 }

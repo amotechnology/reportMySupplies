@@ -26,6 +26,12 @@ const databaseColumns = {
     additional_resources: 'Comments'
 }
 
+/*
+The IDs of open cells above sub tables
+*/
+const openRowIDs = {}
+
+
 /**
  * Sets up the document with default filters set and pulls data from database
  */
@@ -39,65 +45,77 @@ $(document).ready(function() {
         applyFilter();
     });
 
-    $('#shortage-table').on('click', '.closed', function() {
-        $(this).addClass("highlighted");
-        $(this).removeClass('closed');
-
-        $(this).addClass('open');
-        let yAxis = $('#y-axis-filter').val();
-        let location = $('#location-filter').val();
-        let division = $('#division-filter').val();
-        let ppe = $('#ppe-filter').val();
-        let startDate = new Date($('#start-date').val());
-        startDate = convertDateToString(startDate);
-        let endDate = new Date($('#end-date').val());
-        endDate = convertDateToString(endDate);
-        let additionalResources  = 'no';
-
-        let groupBy = $(this).attr('id').split("-")[0];
+    $('#shortage-table').on('click', 'td', function() {
+        
         let dataIndex = $(this).attr('id').split("-")[1];
         
-        if (groupBy in ppeEnum) {
-            ppe = [groupBy];
-        }
-        if (groupBy == 'additional_resources') {
-            ppe = [];
-            additionalResources = 'yes';
-        }
-        if (yAxis == "location") {
-            location = [$(`#location-${dataIndex}`).text()];
-        }
-        if (yAxis == "division") {
-            division = [$(`#division-${dataIndex}`).text()];
-        }
-        if (yAxis == "date") {
-            startDate = $(`#date-${dataIndex}`).text();
-            endDate = startDate;
-        }
+        // if we are closing an old sub-table
+        if (`${dataIndex}` in openRowIDs) {
+            openedId = openRowIDs[`${dataIndex}`];
+            $("#"+openedId).removeClass('open');
+            $("#"+openedId).removeClass('highlighted');
+            $("#"+openedId).addClass('closed');
+            delete openRowIDs[`${dataIndex}`];
+            $(`#subtable-${dataIndex}`).empty();
+            $(`#subtable-${dataIndex}`).append(`<table><tr><td>Loading.....</td></tr></table>`);
+        } else
+        // else we are opening a new sub-table to fill with data
+        {
+            let groupBy = $(this).attr('id').split("-")[0];
+            $(this).addClass("highlighted");
+            $(this).removeClass('closed');
+            $(this).addClass('open');
+            openRowIDs[`${dataIndex}`] = $(this).attr('id');
+            let yAxis = $('#y-axis-filter').val();
+            let location = $('#location-filter').val();
+            let division = $('#division-filter').val();
+            let ppe = $('#ppe-filter').val();
+            let startDate = new Date($('#start-date').val());
+            startDate = convertDateToString(startDate);
+            let endDate = new Date($('#end-date').val());
+            endDate = convertDateToString(endDate);
+            let additionalResources  = 'no';
+            
+            if (groupBy in ppeEnum) {
+                ppe = [groupBy];
+            }
+            if (groupBy == 'additional_resources') {
+                ppe = [];
+                additionalResources = 'yes';
+            }
+            if (yAxis == "location") {
+                location = [$(`#location-${dataIndex}`).text()];
+            }
+            if (yAxis == "division") {
+                division = [$(`#division-${dataIndex}`).text()];
+            }
+            if (yAxis == "date") {
+                startDate = $(`#date-${dataIndex}`).text();
+                endDate = startDate;
+            }
 
-        let queryConstraints = {
-            'query_type': 'select',
-            'y_axis': yAxis,
-            'additional_resources': additionalResources,
-            'location': location,
-            'ppe': ppe,
-            'division': division,
-            'date_range': `${startDate} ${endDate}`
-        };
-        queryDatabase(queryConstraints, $(`#subtable-${dataIndex}`));
+            $('#shortage-table').on('click', '.open', function () {
+                $(this).removeClass('open');
+                $(this).removeClass('highlighted');
+                $(this).addClass('closed');
+                let dataIndex = $(this).attr('id').split("-")[1];
+                $(`#subtable-${dataIndex}`).empty();
+                $(`#subtable-${dataIndex}`).append(`<table><tr><td>Loading.....</td></tr></table>`);
+                let queryConstraints = {
+                    'query_type': 'select',
+                    'y_axis': yAxis,
+                    'additional_resources': additionalResources,
+                    'location': location,
+                    'ppe': ppe,
+                    'division': division,
+                    'date_range': `${startDate} ${endDate}`
+                };
+                queryDatabase(queryConstraints, $(`#subtable-${dataIndex}`));
+            });
+        }
     });
-
-    $('#shortage-table').on('click', '.open', function () {
-        $(this).removeClass('open');
-        $(this).removeClass('highlighted');
-        $(this).addClass('closed');
-        let dataIndex = $(this).attr('id').split("-")[1];
-        $(`#subtable-${dataIndex}`).empty();
-        $(`#subtable-${dataIndex}`).append(`<table><tr><td>Loading.....</td></tr></table>`);
-    });
-
+    
 });
-
 
 function getAllResponses() {
     queryConstraints = {
