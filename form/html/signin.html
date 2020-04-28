@@ -10,23 +10,23 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
         
-        <title>Report My Supplies Verify</title>
+        <title>Report My Supplies Sign In</title>
         <meta name="description" content="">
 
     </head>
     <body>
         <section class="form-wrap">
-            <h1>Verify Email</h1>
-            <form id="verifyForm">
-              <input type="email" id="emailInputVerify" placeholder="Email" required>
-              <input type="text" id="codeInputVerify" placeholder="Verification Code" pattern=".*" required>
+            <h1>Sign In</h1>
+            <form id="signinForm">
+              <input type="email" id="emailInputSignin" placeholder="Email" required>
+              <input type="password" id="passwordInputSignin" placeholder="Password" pattern=".*" required>
 
-              <input type="submit" value="Verify">
+              <input type="submit" value="Sign in">
             </form>
         </section>
-        <script src="js/config.js"></script>
-        <script src="js/cognito-auth.js"></script>
-        <script src="js/amazon-cognito-identity.min.js"></script>
-        <script src="js/aws-cognito-sdk.min.js"></script>
+        <script src="../js/config.js"></script>
+        <script src="../js/cognito-auth.js"></script>
+        <script src="../js/amazon-cognito-identity.min.js"></script>
+        <script src="../js/aws-cognito-sdk.min.js"></script>
     </body>
 </html>

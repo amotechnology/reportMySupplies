@@ -94,21 +94,28 @@ $(document).ready(function() {
                 endDate = startDate;
             }
 
-            let queryConstraints = {
-                'query_type': 'select',
-                'y_axis': yAxis,
-                'additional_resources': additionalResources,
-                'location': location,
-                'ppe': ppe,
-                'division': division,
-                'date_range': `${startDate} ${endDate}`
-            };
-            queryDatabase(queryConstraints, $(`#subtable-${dataIndex}`));
+            $('#shortage-table').on('click', '.open', function () {
+                $(this).removeClass('open');
+                $(this).removeClass('highlighted');
+                $(this).addClass('closed');
+                let dataIndex = $(this).attr('id').split("-")[1];
+                $(`#subtable-${dataIndex}`).empty();
+                $(`#subtable-${dataIndex}`).append(`<table><tr><td>Loading.....</td></tr></table>`);
+                let queryConstraints = {
+                    'query_type': 'select',
+                    'y_axis': yAxis,
+                    'additional_resources': additionalResources,
+                    'location': location,
+                    'ppe': ppe,
+                    'division': division,
+                    'date_range': `${startDate} ${endDate}`
+                };
+                queryDatabase(queryConstraints, $(`#subtable-${dataIndex}`));
+            });
         }
     });
-
+    
 });
-
 
 function getAllResponses() {
     queryConstraints = {
